@@ -44,6 +44,24 @@ export default class EventEmitter {
   }
   
   /**
+   * Add a one time handler for the given event
+   * 
+   * @param {String} event
+   * @param {Function} fn
+   * @return this
+   */
+  once(event, fn) {
+    // TODO ensure that `fn`` is a function
+    
+    // add `once` flag
+    fn.once = true
+    
+    event.split(' ').forEach(name => { name && this.on(name, fn) })
+    
+    return this
+  }
+  
+  /**
    * Trigger sequentially an event with arguments
    * 
    * @param {String} event
@@ -51,7 +69,14 @@ export default class EventEmitter {
    * @return promise
    */
   emit(event, ...args) {
-    return Promise.reduce(this.listeners(event), (_, fn) => fn(...args), null)
+    return Promise.reduce(this.listeners(event), (_, fn) => {
+      if ( fn.once && fn.called ) return false
+      
+      // add `called` flag
+      fn.called = true
+      
+      return fn(...args)
+    }, null)
   }
   
   /**
