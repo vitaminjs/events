@@ -1,28 +1,9 @@
 
 import Promise from 'bluebird'
+import EventEmitter from 'events'
 
 // exports
-export default class EventEmitter {
-  
-  /**
-   * EventEmitter constructor
-   * 
-   * @constructor
-   */
-  constructor() {
-    this.parent = null
-    this._listeners = {}
-  }
-  
-  /**
-   * Get the emitter listerners
-   * 
-   * @param {String} event
-   * @return array
-   */
-  listeners(event) {
-    return (this.parent ? this.parent.listeners(event) : []).concat(this._listeners[event] || [])
-  }
+export default class extends EventEmitter {
   
   /**
    * Add a handler for the given event
@@ -32,14 +13,7 @@ export default class EventEmitter {
    * @return this
    */
   on(event, fn) {
-    // TODO ensure that `fn` is a function
-    
-    event.split(' ').forEach(name => {
-      name && (this._listeners[name] = this._listeners[name] || []).push(fn)
-      
-      // TODO emit a warning if the listeners count is more than 10
-    })
-    
+    event.split(' ').forEach(name => { name && super.on(name, fn) })
     return this
   }
   
@@ -51,13 +25,7 @@ export default class EventEmitter {
    * @return this
    */
   once(event, fn) {
-    // TODO ensure that `fn`` is a function
-    
-    // add `once` flag
-    fn.once = true
-    
-    event.split(' ').forEach(name => { name && this.on(name, fn) })
-    
+    event.split(' ').forEach(name => { name && super.once(name, fn) })
     return this
   }
   
@@ -69,14 +37,7 @@ export default class EventEmitter {
    * @return promise
    */
   emit(event, ...args) {
-    return Promise.reduce(this.listeners(event), (_, fn) => {
-      if ( fn.once && fn.called ) return false
-      
-      // add `called` flag
-      fn.called = true
-      
-      return fn(...args)
-    }, null)
+    return Promise.reduce(this.listeners(event), (_, fn) => fn(...args), 0)
   }
   
   /**
@@ -87,35 +48,10 @@ export default class EventEmitter {
    * @return this
    */
   off(event = null, fn = null) {
-    // call parent's off method to remove ancestor callbacks
-    if ( this.parent ) this.parent.off(...arguments)
-    
-    if ( event == null ) this._listeners = {}
-    else if ( fn == null ) this._listeners[event] = []
-    else {
-      let idx = 0, list = this._listeners[event] || []
-      
-      for ( let cb in list ) {
-        if ( cb !== fn ) { idx++; continue }
-        else { list.splice(idx, 1); break }
-      }
-    }
+    if ( fn ) this.removeListener(...arguments)
+    else this.removeAllListeners(...arguments)
     
     return this
-  }
-  
-  /**
-   * Get a new instance of the event emitter
-   * 
-   * @return emitter instance
-   */
-  clone() {
-    var emitter = new this.constructor()
-    
-    // just set the parent property to access parent listeners
-    emitter.parent = this
-    
-    return emitter
   }
   
 }
