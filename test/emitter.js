@@ -2,7 +2,7 @@
 /* global describe */
 /* global beforeEach */
 
-var EventEmitter = require('../lib/events').default
+var EventEmitter = require('../lib')
 var assert = require('chai').assert
 var noop = function () {}
 

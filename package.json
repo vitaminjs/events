@@ -1,0 +1,39 @@
+{
+  "name": "vitamin-events",
+  "version": "0.0.1",
+  "description": "Events emitter for vitamin mappers",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "build": "babel -q -L -D src -d lib --presets es2015",
+    "prepublish": "npm run build",
+    "test": "npm run build && mocha --recursive"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vitaminjs/events.git"
+  },
+  "keywords": [
+    "vitamin",
+    "events"
+  ],
+  "author": "absolux",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vitaminjs/events/issues"
+  },
+  "homepage": "https://github.com/vitaminjs/events#readme",
+  "dependencies": {
+    "bluebird": "^3.4.3",
+    "events": "^1.1.1",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.11.4",
+    "babel-preset-es2015": "^6.9.0",
+    "chai": "^3.5.0",
+    "mocha": "^2.5.3"
+  }
+}
